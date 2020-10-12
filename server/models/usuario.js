@@ -25,13 +25,19 @@ let CiudadSchema = new Schema({
 
     },
     latitud: {
-        type: String,
+        type: Number,
         required: [true, 'Latitud es obligatoria']
 
     },
     longitud: {
-        type: String,
+        type: Number,
         required: [true, 'longitud es obligatoria']
+
+    },
+    acumulados: {
+        type: Number,
+        required: false,
+        default: 0
 
     },
     historial: [historialSchema]
@@ -43,6 +49,12 @@ let estadoSchema = new Schema({
         type: String,
         unique: true,
         required: [true, 'El nombre del Estado es requerido']
+
+    },
+    acumulados: {
+        type: Number,
+        required: false,
+        default: 0
 
     },
     casosActivos: {
