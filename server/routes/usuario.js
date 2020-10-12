@@ -45,6 +45,14 @@ app.get('/ciudad', (req, res) => {
 
 });
 
+app.get('/desarrollo', (req, res) => {
+    res.json({
+        ok: true,
+        estados: "si funciona el servidor"
+    });
+
+});
+
 app.post('/estado', function(req, res) {
 
     let body = req.body;
