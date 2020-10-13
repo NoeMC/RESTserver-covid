@@ -59,9 +59,8 @@ app.post('/estado', function(req, res) {
 
     let Edos = new Estados({
         nombre: body.nombre,
-        casosActivos: body.activos,
         acumulados: body.acumulados,
-        muertes: body.muertes
+        muertesAcumulado: body.muertes
     });
 
     Edos.save((err, estado) => {
@@ -91,7 +90,8 @@ app.post('/ciudad', function(req, res) {
             nombre: body.nombre,
             latitud: body.lat,
             longitud: body.lng,
-            acumulados: body.acumulados
+            acumulados: body.acumulados,
+            muertesAcumulado: body.muertes
         });
 
         city.save((err, ciudad) => {
@@ -118,7 +118,7 @@ app.post('/ciudad', function(req, res) {
 app.put('/estadoUpdate', (req, res) => {
     let body = req.body;
 
-    Estados.findOneAndUpdate({ nombre: body.nombre }, { $set: { acumulados: body.acumulados, casosActivos: body.activos, muertes: body.muertes } }, { new: true }, (err, user) => {
+    Estados.findOneAndUpdate({ nombre: body.nombre }, { $set: { acumulados: body.acumulados, muertesAcumulado: body.muertes } }, { new: true }, (err, user) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -127,7 +127,7 @@ app.put('/estadoUpdate', (req, res) => {
         }
         res.json({
             ok: true,
-            status: "database update"
+            status: user
         });
     });
 
@@ -136,7 +136,7 @@ app.put('/estadoUpdate', (req, res) => {
 app.put('/ciudadUpdate', (req, res) => {
     let body = req.body;
 
-    Ciudades.findOneAndUpdate({ nombre: body.nombre }, { $set: { acumulados: body.acumulados } }, { new: true }, (err, user) => {
+    Ciudades.findOneAndUpdate({ nombre: body.nombre }, { $set: { acumulados: body.acumulados, muertesAcumulado: body.muertes } }, { new: true }, (err, user) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -145,13 +145,13 @@ app.put('/ciudadUpdate', (req, res) => {
         }
         res.json({
             ok: true,
-            status: "database update"
+            status: user
         });
     });
 
 });
 
-app.put('/historial', function(req, res) {
+app.put('/historialCity', function(req, res) {
     let bandera = null;
     let body = req.body;
     let DiaActual = null;
@@ -162,14 +162,16 @@ app.put('/historial', function(req, res) {
         history = new Historial({
             fecha: DiaActual,
             activos: body.activos,
-            muertes: body.muertes
+            muertes: body.muertes,
+            nuevosCasos: body.nuevoscasos
         });
     } else {
-        DiaActual = body.date;
+        DiaActual = new Date(body.date);
         history = new Historial({
-            fecha: body.date,
+            fecha: DiaActual,
             activos: body.activos,
-            muertes: body.muertes
+            muertes: body.muertes,
+            nuevosCasos: body.nuevoscasos
         });
 
     }
@@ -185,12 +187,61 @@ app.put('/historial', function(req, res) {
         }
         res.json({
             ok: true,
-            status: "database update"
+            status: user
         });
     }).then(() => {
         if (bandera === null) {
 
             Ciudades.findOneAndUpdate({ nombre: body.nombre }, { $addToSet: { historial: history } }, { safe: true, new: true }, () => {
+
+            });
+
+        }
+    });
+});
+
+app.put('/historialEstado', function(req, res) {
+    let bandera = null;
+    let body = req.body;
+    let DiaActual = null;
+    let history = null;
+
+    if (body.date === undefined) {
+        DiaActual = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        history = new Historial({
+            fecha: DiaActual,
+            activos: body.activos,
+            muertes: body.muertes,
+            nuevosCasos: body.nuevoscasos
+        });
+    } else {
+        DiaActual = new Date(body.date);
+        history = new Historial({
+            fecha: DiaActual,
+            activos: body.activos,
+            muertes: body.muertes,
+            nuevosCasos: body.nuevoscasos
+        });
+
+    }
+
+    Estados.findOneAndUpdate({ nombre: body.nombre, "historial.fecha": DiaActual }, { $set: { "historial.$": history } }, { new: true }, (err, user) => {
+        bandera = user;
+
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        res.json({
+            ok: true,
+            status: user
+        });
+    }).then(() => {
+        if (bandera === null) {
+
+            Estados.findOneAndUpdate({ nombre: body.nombre }, { $addToSet: { historial: history } }, { safe: true, new: true }, () => {
 
             });
 

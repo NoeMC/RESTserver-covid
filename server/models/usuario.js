@@ -9,10 +9,19 @@ let historialSchema = new Schema({
         type: Date
     },
     activos: {
-        type: Number
+        type: Number,
+        required: false,
+        default: 0
     },
     muertes: {
-        type: Number
+        type: Number,
+        required: false,
+        default: 0
+    },
+    nuevosCasos: {
+        type: Number,
+        required: false,
+        default: 0
     }
 });
 
@@ -40,6 +49,12 @@ let CiudadSchema = new Schema({
         default: 0
 
     },
+    muertesAcumulado: {
+        type: Number,
+        required: false,
+        default: 0
+
+    },
     historial: [historialSchema]
 });
 
@@ -57,17 +72,13 @@ let estadoSchema = new Schema({
         default: 0
 
     },
-    casosActivos: {
+    muertesAcumulado: {
         type: Number,
         required: false,
         default: 0
 
     },
-    muertes: {
-        type: Number,
-        required: false,
-        default: 0
-    }
+    historial: [historialSchema]
 });
 
 estadoSchema.pre('save', function(next) {
