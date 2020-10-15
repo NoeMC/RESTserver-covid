@@ -1,6 +1,7 @@
 const express = require('express');
 const _ = require('underscore');
 const modelos = require('../models/usuario');
+var axios = require('axios');
 
 
 const Historial = modelos.historial
@@ -8,6 +9,30 @@ const Estados = modelos.estado
 const Ciudades = modelos.ciudad
 
 const app = express();
+
+app.get('/citiesAround', (req, res) => {
+
+    let body = req.body;
+    var config = {
+        method: 'get',
+        url: `https://api.geodatasource.com/cities?key=GGBWX7CQZP8XCOIY1VVD5DDPDZQCGGMN&lat=${body.lat}&lng=${body.lng}`,
+        headers: {},
+    };
+
+    axios(config)
+        .then(function(response) {
+            let datos = response.data.slice(0, body.nmax);
+            res.json({
+                data: datos
+            });
+        })
+        .catch(function(error) {
+            res.status(400).json({
+                ok: false,
+                error
+            });
+        });
+});
 
 
 app.get('/estados', (req, res) => {
