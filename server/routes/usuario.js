@@ -11,11 +11,19 @@ const Ciudades = modelos.ciudad
 const app = express();
 
 app.get('/citiesAround', (req, res) => {
-
     let body = req.body;
+
+    if (body.key === undefined || body.lat === undefined || body.lng === undefined) {
+        return res.status(400).json({
+            ok: false,
+            err: 'parametros incompletos'
+        });
+
+    }
+
     var config = {
         method: 'get',
-        url: `https://api.geodatasource.com/cities?key=GGBWX7CQZP8XCOIY1VVD5DDPDZQCGGMN&lat=${body.lat}&lng=${body.lng}`,
+        url: `https://api.geodatasource.com/cities?key=${body.key}&lat=${body.lat}&lng=${body.lng}`,
         headers: {},
     };
 
