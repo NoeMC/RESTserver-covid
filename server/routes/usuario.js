@@ -11,9 +11,12 @@ const Ciudades = modelos.ciudad
 const app = express();
 
 app.get('/citiesAround', (req, res) => {
-    let body = req.body;
+    let key = req.query.key;
+    let lat = req.query.lat;
+    let lng = req.query.lng;
+    let nmax = req.query.nmax;
 
-    if (body.key === undefined || body.lat === undefined || body.lng === undefined) {
+    if (key === undefined || lat === undefined || lng === undefined) {
         return res.status(400).json({
             ok: false,
             err: 'parametros incompletos'
@@ -23,13 +26,13 @@ app.get('/citiesAround', (req, res) => {
 
     var config = {
         method: 'get',
-        url: `https://api.geodatasource.com/cities?key=${body.key}&lat=${body.lat}&lng=${body.lng}`,
+        url: `https://api.geodatasource.com/cities?key=${key}&lat=${lat}&lng=${lng}`,
         headers: {},
     };
 
     axios(config)
         .then(function(response) {
-            let datos = response.data.slice(0, body.nmax);
+            let datos = response.data.slice(0, nmax);
             res.json({
                 data: datos
             });
@@ -61,8 +64,8 @@ app.get('/estados', (req, res) => {
 });
 
 app.get('/ciudad', (req, res) => {
-    let body = req.body;
-    Ciudades.find({ nombre: body.nombre }, (err, city) => {
+    let nombre = req.query.nombre;
+    Ciudades.find({ nombre: nombre }, (err, city) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
