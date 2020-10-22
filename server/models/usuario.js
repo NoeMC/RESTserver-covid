@@ -8,6 +8,18 @@ let historialSchema = new Schema({
     fecha: {
         type: Date
     },
+    acumulados: {
+        type: Number,
+        required: false,
+        default: 0
+
+    },
+    muertesAcumulado: {
+        type: Number,
+        required: false,
+        default: 0
+
+    },
     activos: {
         type: Number,
         required: false,
@@ -43,18 +55,6 @@ let CiudadSchema = new Schema({
         required: [true, 'longitud es obligatoria']
 
     },
-    acumulados: {
-        type: Number,
-        required: false,
-        default: 0
-
-    },
-    muertesAcumulado: {
-        type: Number,
-        required: false,
-        default: 0
-
-    },
     historial: [historialSchema]
 });
 
@@ -64,18 +64,6 @@ let estadoSchema = new Schema({
         type: String,
         unique: true,
         required: [true, 'El nombre del Estado es requerido']
-
-    },
-    acumulados: {
-        type: Number,
-        required: false,
-        default: 0
-
-    },
-    muertesAcumulado: {
-        type: Number,
-        required: false,
-        default: 0
 
     },
     historial: [historialSchema]

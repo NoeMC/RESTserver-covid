@@ -63,6 +63,24 @@ app.get('/estados', (req, res) => {
 
 });
 
+app.get('/estado', (req, res) => {
+    let nombre = req.query.nombre;
+    Estados.find({ nombre: nombre }, (err, state) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        res.json({
+            ok: true,
+            state
+        });
+
+    });
+
+});
+
 app.get('/ciudad', (req, res) => {
     let nombre = req.query.nombre;
     Ciudades.find({ nombre: nombre }, (err, city) => {
@@ -94,9 +112,7 @@ app.post('/estado', function(req, res) {
     let body = req.body;
 
     let Edos = new Estados({
-        nombre: body.nombre,
-        acumulados: body.acumulados,
-        muertesAcumulado: body.muertes
+        nombre: body.nombre
     });
 
     Edos.save((err, estado) => {
@@ -125,9 +141,7 @@ app.post('/ciudad', function(req, res) {
         let city = new Ciudades({
             nombre: body.nombre,
             latitud: body.lat,
-            longitud: body.lng,
-            acumulados: body.acumulados,
-            muertesAcumulado: body.muertes
+            longitud: body.lng
         });
 
         city.save((err, ciudad) => {
@@ -151,42 +165,6 @@ app.post('/ciudad', function(req, res) {
 
 );
 
-app.put('/estadoUpdate', (req, res) => {
-    let body = req.body;
-
-    Estados.findOneAndUpdate({ nombre: body.nombre }, { $set: { acumulados: body.acumulados, muertesAcumulado: body.muertes } }, { new: true }, (err, user) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
-            });
-        }
-        res.json({
-            ok: true,
-            status: user
-        });
-    });
-
-});
-
-app.put('/ciudadUpdate', (req, res) => {
-    let body = req.body;
-
-    Ciudades.findOneAndUpdate({ nombre: body.nombre }, { $set: { acumulados: body.acumulados, muertesAcumulado: body.muertes } }, { new: true }, (err, user) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
-            });
-        }
-        res.json({
-            ok: true,
-            status: user
-        });
-    });
-
-});
-
 app.put('/historialCity', function(req, res) {
     let bandera = null;
     let body = req.body;
@@ -199,7 +177,9 @@ app.put('/historialCity', function(req, res) {
             fecha: DiaActual,
             activos: body.activos,
             muertes: body.muertes,
-            nuevosCasos: body.nuevoscasos
+            nuevosCasos: body.nuevoscasos,
+            muertesAcumulado: body.muertesacu,
+            acumulados: body.acumulados
         });
     } else {
         DiaActual = new Date(body.date);
@@ -207,7 +187,9 @@ app.put('/historialCity', function(req, res) {
             fecha: DiaActual,
             activos: body.activos,
             muertes: body.muertes,
-            nuevosCasos: body.nuevoscasos
+            nuevosCasos: body.nuevoscasos,
+            muertesAcumulado: body.muertesacu,
+            acumulados: body.acumulados
         });
 
     }
@@ -248,7 +230,9 @@ app.put('/historialEstado', function(req, res) {
             fecha: DiaActual,
             activos: body.activos,
             muertes: body.muertes,
-            nuevosCasos: body.nuevoscasos
+            nuevosCasos: body.nuevoscasos,
+            muertesAcumulado: body.muertesacu,
+            acumulados: body.acumulados
         });
     } else {
         DiaActual = new Date(body.date);
@@ -256,7 +240,9 @@ app.put('/historialEstado', function(req, res) {
             fecha: DiaActual,
             activos: body.activos,
             muertes: body.muertes,
-            nuevosCasos: body.nuevoscasos
+            nuevosCasos: body.nuevoscasos,
+            muertesAcumulado: body.muertesacu,
+            acumulados: body.acumulados
         });
 
     }
