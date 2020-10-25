@@ -76,7 +76,22 @@ app.get('/estado', (req, res) => {
             ok: true,
             state
         });
+    });
+});
 
+app.get('/ciudades', (req, res) => {
+
+    Ciudades.find((null), (err, city) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        res.json({
+            ok: true,
+            city
+        });
     });
 
 });
@@ -84,6 +99,24 @@ app.get('/estado', (req, res) => {
 app.get('/ciudad', (req, res) => {
     let nombre = req.query.nombre;
     Ciudades.find({ nombre: nombre }, (err, city) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        res.json({
+            ok: true,
+            city
+        });
+
+    });
+
+});
+
+app.get('/matchciudad', (req, res) => {
+    let nombre = req.query.nombre;
+    Ciudades.find({ nombre: { $regex: new RegExp(nombre), $options: 'i' } }, (err, city) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
